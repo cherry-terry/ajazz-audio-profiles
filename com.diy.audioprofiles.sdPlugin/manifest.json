@@ -1,0 +1,121 @@
+{
+  "Actions": [
+    {
+      "Name": "Sound Output",
+      "UUID": "com.diy.audioprofiles.output",
+      "Icon": "static/output.png",
+      "Tooltip": "Make this device the default output",
+      "States": [
+        {
+          "Image": "static/output.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Microphone",
+      "UUID": "com.diy.audioprofiles.mic",
+      "Icon": "static/mic.png",
+      "Tooltip": "Make this the default microphone; hold to mute",
+      "States": [
+        {
+          "Image": "static/mic.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Toggle Profiles",
+      "UUID": "com.diy.audioprofiles.toggle",
+      "Icon": "static/toggle.png",
+      "Tooltip": "Switch between two audio profiles",
+      "States": [
+        {
+          "Image": "static/toggle.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Profile",
+      "UUID": "com.diy.audioprofiles.profile",
+      "Icon": "static/profile.png",
+      "Tooltip": "Activate an audio profile",
+      "States": [
+        {
+          "Image": "static/profile.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Mic Mute",
+      "UUID": "com.diy.audioprofiles.mute",
+      "Icon": "static/mute.png",
+      "Tooltip": "Mute or unmute the default microphone",
+      "States": [
+        {
+          "Image": "static/mute.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    }
+  ],
+  "SDKVersion": 3,
+  "Author": "DIY",
+  "Name": "Audio Profiles",
+  "Icon": "static/plugin.png",
+  "CategoryIcon": "static/plugin.png",
+  "Category": "Audio Profiles",
+  "CodePathWin": "plugin/index.js",
+  "Description": "Switch Windows audio devices and profiles, with live LED indicators",
+  "Version": "1.0.0",
+  "URL": "https://github.com",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "3.10.188.226"
+  },
+  "Nodejs": {
+    "Version": "20"
+  }
+}

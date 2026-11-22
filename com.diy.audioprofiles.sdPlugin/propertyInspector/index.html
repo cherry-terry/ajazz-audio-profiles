@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --text:#d6d6d6; --sub:#8e8e8e; --field:#3a3a3a; --line:#4a4a4a; --accent:#4ea1ff; --danger:#ff6b61; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:10px 12px 18px; font:12px/1.45 "Segoe UI", Arial, sans-serif; color:var(--text); background:transparent; }
+  h2 { margin:0; font-size:13px; font-weight:600; }
+  .sub { color:var(--sub); font-size:11px; margin:1px 0 10px; }
+  .top { display:grid; grid-template-columns:24px 1fr 24px; align-items:start; gap:4px; }
+  .top h2, .top .sub { text-align:center; }
+  label.f { display:block; color:var(--sub); margin:10px 0 4px; }
+  select, input[type=text] { width:100%; height:26px; padding:0 6px; color:var(--text); background:var(--field); border:1px solid var(--line); border-radius:4px; font:inherit; }
+  .check { display:flex; align-items:center; gap:6px; margin-top:10px; color:var(--text); }
+  .appearance { display:grid; grid-template-columns:96px 1fr; gap:12px; margin-top:6px; }
+  .preview { width:96px; height:96px; }
+  .preview svg { width:96px; height:96px; display:block; }
+  .section { margin-top:14px; color:var(--sub); font-size:11px; letter-spacing:.04em; }
+  .sw { display:flex; flex-wrap:wrap; gap:5px; }
+  .sw button { width:20px; height:20px; padding:0; border-radius:50%; border:2px solid transparent; cursor:pointer; }
+  .sw button[aria-pressed=true] { border-color:#fff; }
+  .sw input[type=color] { width:20px; height:20px; padding:0; border:1px solid var(--line); border-radius:50%; background:none; cursor:pointer; }
+  .hint { color:var(--sub); font-size:11px; margin:8px 0 0; }
+  button.btn { width:100%; height:28px; margin-top:12px; color:var(--text); background:transparent; border:1px solid var(--line); border-radius:4px; font:inherit; cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button.icon { width:24px; height:24px; padding:0; color:var(--text); background:transparent; border:0; cursor:pointer; font-size:15px; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+  .pair .btn { margin-top:0; }
+  .num { display:grid; grid-template-columns:16px 1fr; align-items:center; gap:6px; margin-top:6px; }
+  .num span { color:var(--sub); text-align:center; }
+  .card { border:1px solid var(--line); border-radius:5px; padding:7px 8px; margin-top:8px; display:grid; grid-template-columns:1fr auto auto; gap:4px; align-items:center; }
+  .card b { display:flex; align-items:center; gap:6px; font-weight:600; }
+  .dot { width:7px; height:7px; border-radius:50%; flex:none; }
+  .card small { grid-column:1 / -1; color:var(--sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card .del { color:var(--danger); }
+  .empty { color:var(--sub); margin:14px 0; }
+  .warn { color:#ffcf6b; font-size:11px; margin:0 0 8px; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<p class="warn" id="noHelper" hidden>The audio helper is not running. Check the plugin log; it works on Windows only.</p>
+
+<!-- ======== Action settings ======== -->
+<section id="vMain">
+  <div data-for="output mic">
+    <h2 id="mTitle"></h2>
+    <p class="sub">The LED shows whether this is the current Windows default.</p>
+    <label class="f" for="device" id="deviceLabel"></label>
+    <select id="device"></select>
+  </div>
+
+  <div data-for="toggle">
+    <h2>Toggle profiles</h2>
+    <p class="sub">Switch between exactly two audio setups.</p>
+    <label class="f">Profiles</label>
+    <div class="num"><span>1</span><select id="a"></select></div>
+    <div class="num"><span>2</span><select id="b"></select></div>
+  </div>
+
+  <div data-for="profile">
+    <h2>Profile</h2>
+    <p class="sub">A tap activates the whole profile: output and microphone.</p>
+    <label class="f" for="profile">Profile</label>
+    <select id="profile"></select>
+  </div>
+
+  <div data-for="mute">
+    <h2>Mic mute</h2>
+    <p class="sub">A tap mutes or unmutes the default Windows microphone.</p>
+  </div>
+
+  <div data-for="output mic mute">
+    <div class="section">APPEARANCE</div>
+    <div class="appearance">
+      <div class="preview" id="preview"></div>
+      <div>
+        <label class="f" for="icon" style="margin-top:0">Icon</label>
+        <select id="icon"></select>
+        <label class="f">LED color</label>
+        <div class="sw" id="color"></div>
+      </div>
+    </div>
+  </div>
+
+  <div data-for="output mic toggle profile">
+    <label class="check"><input type="checkbox" id="showName"> Show name on key</label>
+  </div>
+  <div data-for="output mic">
+    <label class="f" for="name">Name</label>
+    <input type="text" id="name" maxlength="20">
+  </div>
+
+  <p class="hint" id="hint"></p>
+  <div data-for="toggle profile"><button class="btn" id="manage" type="button">Manage profiles</button></div>
+</section>
+
+<!-- ======== Profile list ======== -->
+<section id="vList" hidden>
+  <div class="top">
+    <button class="icon" id="listBack" type="button" aria-label="Back">‹</button>
+    <div><h2>Profiles</h2><p class="sub">One place for every audio setup</p></div>
+    <button class="icon" id="refresh" type="button" aria-label="Refresh devices">↻</button>
+  </div>
+  <div id="list"></div>
+  <button class="btn" id="add" type="button">Add profile</button>
+</section>
+
+<!-- ======== Edit profile ======== -->
+<section id="vEdit" hidden>
+  <div class="top">
+    <button class="icon" id="editBack" type="button" aria-label="Back">‹</button>
+    <div><h2 id="editTitle">Profile</h2><p class="sub">Choose where sound goes and where your voice comes from</p></div>
+    <span></span>
+  </div>
+  <label class="f" for="pName">Profile name</label>
+  <input type="text" id="pName" maxlength="20">
+  <label class="f" for="pOut">Sound output</label>
+  <select id="pOut"></select>
+  <label class="f" for="pMic">Microphone</label>
+  <select id="pMic"></select>
+  <div class="section">APPEARANCE</div>
+  <div class="appearance">
+    <div class="preview" id="pPreview"></div>
+    <div>
+      <label class="f" for="pIcon" style="margin-top:0">Icon</label>
+      <select id="pIcon"></select>
+      <label class="f">LED color</label>
+      <div class="sw" id="pColor"></div>
+    </div>
+  </div>
+  <div class="pair">
+    <button class="btn" id="cancel" type="button">Cancel</button>
+    <button class="btn primary" id="saveP" type="button">Save profile</button>
+  </div>
+</section>
+
+<script src="../plugin/render.js"></script>
+<script>
+const R = window.APMRender;
+const DEFAULTS = {
+  output: { device:'', deviceName:'', icon:'auto', color:'#3ddc5a', showName:false, name:'' },
+  mic: { device:'', deviceName:'', icon:'auto', color:'#4ea1ff', showName:false, name:'' },
+  toggle: { a:'', b:'', showName:true },
+  profile: { profile:'', showName:true },
+  mute: { color:'#3ddc5a', icon:'mic' },
+};
+let ws, uuid, action, kind, settings = {};
+let st = { render:[], capture:[], defRender:'', defCapture:'', profiles:[], helperOk:true };
+let editing = null; // profile being edited
+const $ = id => document.getElementById(id);
+
+function connectElgatoStreamDeckSocket(port, inUUID, registerEvent, info, actionInfo) {
+  uuid = inUUID;
+  try { const a = JSON.parse(actionInfo); action = a.action; settings = (a.payload && a.payload.settings) || {}; } catch (_) {}
+  kind = (action || '').split('.').pop();
+  settings = Object.assign({}, DEFAULTS[kind] || {}, settings);
+  ws = new WebSocket('ws://127.0.0.1:' + port);
+  ws.onopen = () => {
+    ws.send(JSON.stringify({ event: registerEvent, uuid }));
+    toPlugin({ type: 'hello' });
+  };
+  ws.onmessage = e => {
+    const m = JSON.parse(e.data);
+    if (m.event === 'didReceiveSettings' && m.payload) { settings = Object.assign({}, DEFAULTS[kind] || {}, m.payload.settings || {}); renderMain(); }
+    if (m.event === 'sendToPropertyInspector' && m.payload && m.payload.type === 'state') {
+      st = m.payload; renderMain(); if (!$('vList').hidden) renderList();
+      if (!$('vEdit').hidden) refreshEditSelects();
+    }
+  };
+  setupStatic(); renderMain();
+}
+const connectSocket = connectElgatoStreamDeckSocket;
+const toPlugin = payload => ws && ws.readyState === 1 && ws.send(JSON.stringify({ event: 'sendToPlugin', action, context: uuid, payload }));
+
+function save() {
+  if (!ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ event: 'setSettings', context: uuid, payload: settings }));
+  toPlugin({ type: 'settings', settings });
+  renderPreview();
+}
+
+// ---------- shared controls ----------
+function fillIcons(sel, withAuto) {
+  sel.innerHTML = '';
+  if (withAuto) sel.add(new Option('Automatic', 'auto'));
+  for (const k of R.ICON_ORDER) sel.add(new Option(R.ICONS[k].name, k));
+}
+function swatches(box, get, set) {
+  box.innerHTML = '';
+  const cur = (get() || '').toLowerCase();
+  let known = false;
+  for (const [hex, name] of R.LED_COLORS) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.style.background = hex; b.title = name; b.setAttribute('aria-label', name);
+    b.setAttribute('aria-pressed', hex === cur); if (hex === cur) known = true;
+    b.onclick = () => { set(hex); swatches(box, get, set); };
+    box.appendChild(b);
+  }
+  const c = document.createElement('input');
+  c.type = 'color'; c.title = 'Custom color'; c.value = cur || '#3ddc5a';
+  if (!known) c.style.outline = '2px solid #fff';
+  c.oninput = () => set(c.value);
+  c.onchange = () => swatches(box, get, set);
+  box.appendChild(c);
+}
+function fillDevices(sel, list, id, name, emptyText) {
+  sel.innerHTML = '';
+  sel.add(new Option(emptyText, ''));
+  for (const d of list) sel.add(new Option(d.name, d.id));
+  if ((id || name) && !list.some(d => d.id === id || d.name === name)) sel.add(new Option((name || 'Device') + ' (disconnected)', id || ('name:' + name)));
+  const byName = list.find(d => d.id !== id && d.name === name);
+  sel.value = list.some(d => d.id === id) ? id : (byName ? byName.id : (id || (name ? 'name:' + name : '')));
+}
+function deviceOf(list, value) {
+  if (!value) return { id:'', name:'' };
+  if (value.startsWith('name:')) return { id:'', name:value.slice(5) };
+  const d = list.find(x => x.id === value);
+  return d ? { id:d.id, name:d.name } : { id:value, name:'' };
+}
+function fillProfiles(sel, value) {
+  sel.innerHTML = '';
+  sel.add(new Option(st.profiles.length ? '— choose a profile —' : '— create a profile first —', ''));
+  for (const p of st.profiles) sel.add(new Option(p.name, p.id));
+  sel.value = st.profiles.some(p => p.id === value) ? value : '';
+}
+
+// ---------- main view ----------
+function setupStatic() {
+  document.querySelectorAll('[data-for]').forEach(el => { el.hidden = !el.dataset.for.split(' ').includes(kind); });
+  $('mTitle').textContent = kind === 'mic' ? 'Set microphone' : 'Set output device';
+  $('deviceLabel').textContent = kind === 'mic' ? 'Microphone' : 'Sound output';
+  $('hint').textContent = {
+    output: 'A tap makes this device the default for every app.',
+    mic: 'A tap makes this the default microphone. Hold to mute or unmute it.',
+    toggle: 'Tap to switch profiles. Hold to mute or unmute the current microphone.',
+    profile: 'The LED lights when the profile output and microphone are the current defaults.',
+    mute: 'The LED lights while the mic is live. It turns red and the icon is crossed out when muted.',
+  }[kind] || '';
+  if (kind === 'mute') {
+    const s = $('icon'); s.innerHTML = '';
+    for (const k of ['mic', 'studiomic', 'headset', 'webcam']) s.add(new Option(R.ICONS[k].name, k));
+  } else fillIcons($('icon'), true);
+
+  $('device').onchange = () => { const d = deviceOf(st[kind === 'mic' ? 'capture' : 'render'], $('device').value); settings.device = d.id; settings.deviceName = d.name; save(); };
+  $('icon').onchange = () => { settings.icon = $('icon').value; save(); };
+  $('showName').onchange = () => { settings.showName = $('showName').checked; save(); };
+  $('name').oninput = () => { settings.name = $('name').value; save(); };
+  $('a').onchange = () => { settings.a = $('a').value; save(); };
+  $('b').onchange = () => { settings.b = $('b').value; save(); };
+  $('profile').onchange = () => { settings.profile = $('profile').value; save(); };
+  $('manage').onclick = () => show('vList');
+  $('listBack').onclick = () => show('vMain');
+  $('refresh').onclick = () => toPlugin({ type: 'refresh' });
+  $('add').onclick = () => openEdit(null);
+  $('editBack').onclick = $('cancel').onclick = () => show('vList');
+  $('saveP').onclick = saveEdit;
+  ['pName'].forEach(id => $(id).oninput = renderEditPreview);
+  $('pIcon').onchange = () => { if (editing) editing.autoIcon = false; renderEditPreview(); };
+  $('pOut').onchange = () => {
+    const d = st.render.find(x => x.id === $('pOut').value);
+    if (d && editing && editing.autoIcon) { $('pIcon').value = R.autoIcon(d, 'render'); }
+    renderEditPreview();
+  };
+  fillIcons($('pIcon'), false);
+}
+
+function renderMain() {
+  $('noHelper').hidden = st.helperOk !== false;
+  if (kind === 'output' || kind === 'mic') {
+    const list = st[kind === 'mic' ? 'capture' : 'render'] || [];
+    fillDevices($('device'), list, settings.device, settings.deviceName, kind === 'mic' ? '— choose a microphone —' : '— choose a device —');
+    const d = list.find(x => x.id === settings.device) || list.find(x => x.name === settings.deviceName);
+    $('name').placeholder = d ? (d.iface || d.desc || d.name) : '';
+    $('name').value = settings.name || '';
+  }
+  if (kind === 'toggle') { fillProfiles($('a'), settings.a); fillProfiles($('b'), settings.b); }
+  if (kind === 'profile') fillProfiles($('profile'), settings.profile);
+  if ($('icon')) $('icon').value = settings.icon || 'auto';
+  $('showName').checked = !!settings.showName;
+  swatches($('color'), () => settings.color, v => { settings.color = v; save(); });
+  renderPreview();
+}
+
+function renderPreview() {
+  if (!['output', 'mic', 'mute'].includes(kind)) return;
+  const flow = kind === 'output' ? 'render' : 'capture';
+  const list = st[flow] || [];
+  const d = list.find(x => x.id === settings.device) || list.find(x => x.name === settings.deviceName);
+  const icon = settings.icon === 'auto' ? R.autoIcon(d || { name: settings.deviceName }, flow) : settings.icon;
+  const label = kind !== 'mute' && settings.showName ? (settings.name || (d ? (d.iface || d.desc || d.name) : '')) : '';
+  $('preview').innerHTML = R.key({ icon, color: settings.color, active: true, label });
+}
+
+// ---------- profiles ----------
+function show(v) { for (const id of ['vMain', 'vList', 'vEdit']) $(id).hidden = id !== v; if (v === 'vList') renderList(); if (v === 'vMain') renderMain(); }
+
+function devName(list, id, name) { const d = list.find(x => x.id === id) || list.find(x => x.name === name); return d ? d.name : (name ? name + ' (disconnected)' : ''); }
+function isActive(p) {
+  const out = st.render.find(x => x.id === p.output) || st.render.find(x => x.name === p.outputName);
+  const mic = st.capture.find(x => x.id === p.mic) || st.capture.find(x => x.name === p.micName);
+  return !!out && out.id === st.defRender && (!(p.mic || p.micName) || (!!mic && mic.id === st.defCapture));
+}
+
+function renderList() {
+  const box = $('list'); box.innerHTML = '';
+  if (!st.profiles.length) { box.innerHTML = '<p class="empty">No profiles yet. Create one: pick an output, a microphone, an icon and a color.</p>'; return; }
+  for (const p of st.profiles) {
+    const el = document.createElement('div'); el.className = 'card';
+    const t = document.createElement('b');
+    const dot = document.createElement('span'); dot.className = 'dot';
+    dot.style.background = isActive(p) ? p.color : 'transparent'; dot.style.border = '1px solid ' + p.color;
+    dot.title = isActive(p) ? 'Active now' : '';
+    t.append(dot, document.createTextNode(p.name));
+    const edit = document.createElement('button'); edit.className = 'icon'; edit.type = 'button'; edit.textContent = '✎'; edit.title = 'Edit'; edit.onclick = () => openEdit(p);
+    const del = document.createElement('button'); del.className = 'icon del'; del.type = 'button'; del.textContent = '✕'; del.title = 'Delete';
+    del.onclick = () => { if (confirm('Delete profile "' + p.name + '"?')) { st.profiles = st.profiles.filter(x => x.id !== p.id); toPlugin({ type: 'saveProfiles', profiles: st.profiles }); renderList(); } };
+    const small = document.createElement('small');
+    small.textContent = [devName(st.render, p.output, p.outputName), devName(st.capture, p.mic, p.micName)].filter(Boolean).join(' · ') || 'No devices chosen';
+    el.append(t, edit, del, small);
+    box.appendChild(el);
+  }
+}
+
+function openEdit(p) {
+  editing = p ? Object.assign({}, p) : { id:'', name:'', output:'', outputName:'', mic:'', micName:'', icon:'headset', color:'#a77bff', autoIcon:true };
+  $('editTitle').textContent = p ? 'Edit profile' : 'New profile';
+  $('pName').value = editing.name;
+  $('pOut').innerHTML = ''; $('pMic').innerHTML = '';
+  refreshEditSelects();
+  $('pIcon').value = editing.icon;
+  swatches($('pColor'), () => editing.color, v => { editing.color = v; renderEditPreview(); });
+  show('vEdit');
+  renderEditPreview();
+}
+function refreshEditSelects() {
+  if (!editing) return;
+  const o = $('pOut').value || editing.output, m = $('pMic').value;
+  fillDevices($('pOut'), st.render, editing.output, editing.outputName, '— choose an output —');
+  fillDevices($('pMic'), st.capture, editing.mic, editing.micName, 'Keep current microphone');
+  if (o && [...$('pOut').options].some(x => x.value === o)) $('pOut').value = o;
+  if (m && [...$('pMic').options].some(x => x.value === m)) $('pMic').value = m;
+}
+function renderEditPreview() {
+  if (!editing) return;
+  $('pPreview').innerHTML = R.key({ icon: $('pIcon').value || editing.icon, color: editing.color, active: true, label: $('pName').value || 'Profile' });
+}
+function saveEdit() {
+  const name = $('pName').value.trim();
+  if (!name) { $('pName').focus(); $('pName').placeholder = 'Enter a profile name'; return; }
+  const out = deviceOf(st.render, $('pOut').value), mic = deviceOf(st.capture, $('pMic').value);
+  if (!out.id && !out.name) { $('pOut').focus(); return; }
+  const p = { id: editing.id || ('p' + Date.now().toString(36)), name, output: out.id, outputName: out.name, mic: mic.id, micName: mic.name,
+              icon: $('pIcon').value, color: editing.color };
+  const i = st.profiles.findIndex(x => x.id === p.id);
+  if (i >= 0) st.profiles[i] = p; else st.profiles.push(p);
+  toPlugin({ type: 'saveProfiles', profiles: st.profiles });
+  editing = null;
+  show('vList');
+}
+</script>
+</body>
+</html>
