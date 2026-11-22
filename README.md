@@ -1,5 +1,7 @@
 <div align="center">
 
+![Social banner](screenshots/audio-profile-social-banner.jpg)
+
 # 🎧 Audio Profiles
 
 **Switch Windows speakers, headphones, microphones and whole audio setups from your Stream Dock, with live LED indicators under each icon**
