@@ -65,7 +65,7 @@
 
 Every action except Toggle Profiles, Push to Talk, App Switcher and Mic Level works inside Multi Actions.
 
-![GIF](how_it _works_gif.gif)
+![GIF](how_it%20_works_gif.gif)
 
 ### Key states
 
