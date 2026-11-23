@@ -22,7 +22,7 @@
   .sw button[aria-pressed=true] { border-color:#fff; }
   .sw input[type=color] { width:20px; height:20px; padding:0; border:1px solid var(--line); border-radius:50%; background:none; cursor:pointer; }
   .hint { color:var(--sub); font-size:11px; margin:8px 0 0; }
-  button.btn { width:100%; height:28px; margin-top:12px; color:var(--text); background:transparent; border:1px solid var(--line); border-radius:4px; font:inherit; cursor:pointer; }
+  .btn { width:100%; height:28px; margin-top:12px; color:var(--text); background:transparent; border:1px solid var(--line); border-radius:4px; font:inherit; cursor:pointer; }
   button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
   button.icon { width:24px; height:24px; padding:0; color:var(--text); background:transparent; border:0; cursor:pointer; font-size:15px; }
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
@@ -37,6 +37,11 @@
   .empty { color:var(--sub); margin:14px 0; }
   .warn { color:#ffcf6b; font-size:11px; margin:0 0 8px; }
   button:focus-visible, select:focus-visible, input:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+  label.btn.file { display:flex; align-items:center; justify-content:center; height:26px; margin-top:6px; }
+  .opt { display:flex; align-items:center; gap:6px; margin:3px 0; }
+  .opt img, .opt .ph { width:16px; height:16px; border-radius:3px; flex:none; }
+  .opt .ph { background:var(--field); }
+  .opt small { color:var(--sub); margin-left:auto; }
   [hidden] { display:none !important; }
 </style>
 </head>
@@ -72,6 +77,95 @@
     <p class="sub">A tap mutes or unmutes the default Windows microphone.</p>
   </div>
 
+  <div data-for="volume">
+    <h2>Volume</h2>
+    <p class="sub">Put it on a knob to turn the volume, and on a key to see it.</p>
+    <label class="f" for="target">Controls</label>
+    <select id="target"><option value="output">Sound output (current default)</option><option value="mic">Microphone (current default)</option></select>
+  </div>
+
+  <div data-for="appvol focus">
+    <h2 id="appTitle"></h2>
+    <p class="sub" id="appSub"></p>
+    <label class="f" for="appSel">Program</label>
+    <select id="appSel"></select>
+    <label class="btn file" for="appFile">Not in the list? Choose its .exe…</label>
+    <input type="file" id="appFile" accept=".exe" hidden>
+    <p class="hint" id="appNote"></p>
+  </div>
+
+  <div data-for="focus">
+    <label class="f" for="fMode">Other programs</label>
+    <select id="fMode"><option value="duck">Turn down</option><option value="mute">Mute</option></select>
+    <div id="fLevelBox">
+      <label class="f" for="fLevel">Turn down to</label>
+      <select id="fLevel"><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="50">50%</option></select>
+    </div>
+  </div>
+
+  <div data-for="appswitch">
+    <h2>App switcher</h2>
+    <p class="sub">Turn to choose a program. App Volume keys set to <i>Follow App Switcher</i> show and change the chosen one.</p>
+    <label class="f">Programs</label>
+    <div id="swList"></div>
+    <label class="btn file" for="swFile">Add .exe file…</label>
+    <input type="file" id="swFile" accept=".exe" hidden>
+    <p class="hint">None ticked: every program that is playing sound.</p>
+  </div>
+
+  <div data-for="volume appvol">
+    <label class="f" for="step">Step per knob click</label>
+    <select id="step"><option value="1">1%</option><option value="2">2%</option><option value="5">5%</option><option value="10">10%</option></select>
+  </div>
+
+  <div data-for="ptt">
+    <h2>Push to talk</h2>
+    <p class="sub">Hold the key while you speak.</p>
+    <label class="f" for="pttMode">While held</label>
+    <select id="pttMode"><option value="key">Press a keyboard key (for Discord)</option><option value="mute">Unmute the Windows microphone</option></select>
+    <div id="pttKeyBox">
+      <label class="f" for="pttKey">Key</label>
+      <select id="pttKey"></select>
+      <label class="f" for="pttLabel">Name on key</label>
+      <input type="text" id="pttLabel" maxlength="20">
+    </div>
+  </div>
+
+  <div data-for="autoprofile">
+    <h2>Auto profile</h2>
+    <p class="sub">When a game starts, switch to its profile. When it closes, go back.</p>
+    <label class="check"><input type="checkbox" id="autoOn"> Switch automatically</label>
+    <div id="rules"></div>
+    <div class="section">ADD A GAME</div>
+    <label class="f" for="rExe">Game</label>
+    <select id="rExe"></select>
+    <label class="btn file" for="rFile">Choose .exe file…</label>
+    <input type="file" id="rFile" accept=".exe" hidden>
+    <label class="f" for="rName">Name on key</label>
+    <input type="text" id="rName" maxlength="20">
+    <label class="f" for="rProfile">Profile</label>
+    <select id="rProfile"></select>
+    <button class="btn" id="rAdd" type="button">Add game</button>
+  </div>
+
+  <div data-for="meter">
+    <h2>Mic level</h2>
+    <p class="sub">Live level of the default microphone. Tap to mute.</p>
+  </div>
+
+  <div data-for="previous">
+    <h2>Previous profile</h2>
+    <p class="sub">Go back to the output and microphone you used before.</p>
+  </div>
+
+  <div data-for="volume appvol appswitch ptt autoprofile meter previous focus">
+    <div class="section">PREVIEW</div>
+    <div class="appearance">
+      <div class="preview" id="preview2"></div>
+      <div data-for="appvol"><label class="f" style="margin-top:0">LED color</label><div class="sw" id="color2"></div></div>
+    </div>
+  </div>
+
   <div data-for="output mic mute">
     <div class="section">APPEARANCE</div>
     <div class="appearance">
@@ -85,7 +179,7 @@
     </div>
   </div>
 
-  <div data-for="output mic toggle profile">
+  <div data-for="output mic toggle profile previous">
     <label class="check"><input type="checkbox" id="showName"> Show name on key</label>
   </div>
   <div data-for="output mic">
@@ -94,7 +188,7 @@
   </div>
 
   <p class="hint" id="hint"></p>
-  <div data-for="toggle profile"><button class="btn" id="manage" type="button">Manage profiles</button></div>
+  <div data-for="toggle profile autoprofile"><button class="btn" id="manage" type="button">Manage profiles</button></div>
 </section>
 
 <!-- ======== Profile list ======== -->
@@ -146,9 +240,18 @@ const DEFAULTS = {
   toggle: { a:'', b:'', showName:true },
   profile: { profile:'', showName:true },
   mute: { color:'#3ddc5a', icon:'mic' },
+  volume: { target:'output', step:2 },
+  appvol: { app:'@switcher', appName:'', appPath:'', step:2, color:'#3ddc5a' },
+  ptt: { mode:'key', key:'F13', label:'Discord PTT' },
+  appswitch: { apps:'' },
+  autoprofile: {},
+  meter: {},
+  previous: { showName:true },
+  focus: { app:'discord.exe', appName:'Discord', mode:'duck', level:20 },
 };
+const PTT_KEYS = ['F13','F14','F15','F16','F17','F18','F19','F20','F21','F22','F23','F24','ScrollLock','Pause','Insert'];
 let ws, uuid, action, kind, settings = {};
-let st = { render:[], capture:[], defRender:'', defCapture:'', profiles:[], helperOk:true };
+let st = { render:[], capture:[], defRender:'', defCapture:'', profiles:[], helperOk:true, apps:[], icons:{}, autoRules:[], autoEnabled:true };
 let editing = null; // profile being edited
 const $ = id => document.getElementById(id);
 
@@ -180,6 +283,7 @@ function save() {
   ws.send(JSON.stringify({ event: 'setSettings', context: uuid, payload: settings }));
   toPlugin({ type: 'settings', settings });
   renderPreview();
+  renderPreview2();
 }
 
 // ---------- shared controls ----------
@@ -238,7 +342,16 @@ function setupStatic() {
     toggle: 'Tap to switch profiles. Hold to mute or unmute the current microphone.',
     profile: 'The LED lights when the profile output and microphone are the current defaults.',
     mute: 'The LED lights while the mic is live. It turns red and the icon is crossed out when muted.',
+    volume: 'Knob: turn to change, press to mute. Key: tap to mute. Turning up unmutes.',
+    appvol: 'Knob: turn to change, press to mute. Key: tap to mute. The icon comes from the program on this PC.',
+    appswitch: 'Knob: turn to choose, press to mute. Key: tap for the next program, hold to mute.',
+    ptt: '',
+    meter: 'Windows shows the microphone as in use while this key is on screen.',
+    previous: 'Tap again to go back and forth between the last two setups.',
+    focus: 'Tap to turn on. Tap again to give every program its volume back.',
+    autoprofile: 'Tap the key to turn automatic switching on or off.',
   }[kind] || '';
+  setupNew();
   if (kind === 'mute') {
     const s = $('icon'); s.innerHTML = '';
     for (const k of ['mic', 'studiomic', 'headset', 'webcam']) s.add(new Option(R.ICONS[k].name, k));
@@ -246,7 +359,7 @@ function setupStatic() {
 
   $('device').onchange = () => { const d = deviceOf(st[kind === 'mic' ? 'capture' : 'render'], $('device').value); settings.device = d.id; settings.deviceName = d.name; save(); };
   $('icon').onchange = () => { settings.icon = $('icon').value; save(); };
-  $('showName').onchange = () => { settings.showName = $('showName').checked; save(); };
+  $('showName').onchange = () => { settings.showName = $('showName').checked; save(); renderPreview2(); };
   $('name').oninput = () => { settings.name = $('name').value; save(); };
   $('a').onchange = () => { settings.a = $('a').value; save(); };
   $('b').onchange = () => { settings.b = $('b').value; save(); };
@@ -269,6 +382,7 @@ function setupStatic() {
 
 function renderMain() {
   $('noHelper').hidden = st.helperOk !== false;
+  renderNew();
   if (kind === 'output' || kind === 'mic') {
     const list = st[kind === 'mic' ? 'capture' : 'render'] || [];
     fillDevices($('device'), list, settings.device, settings.deviceName, kind === 'mic' ? '— choose a microphone —' : '— choose a device —');
@@ -359,6 +473,163 @@ function saveEdit() {
   toPlugin({ type: 'saveProfiles', profiles: st.profiles });
   editing = null;
   show('vList');
+}
+
+// ---------- 1.1 actions ----------
+// Stream Dock gives the file name as a URL-encoded full path (C%3a%5cusers%5c...%5capp.exe)
+function filePath(f) {
+  let raw = (f && (f.path || f.name)) || '';
+  try { raw = decodeURIComponent(raw); } catch (_) {}
+  return raw.replace(/^file:\/+/i, '');
+}
+const exeName = f => filePath(f).split(/[\\/]/).pop().toLowerCase();
+const stem = exe => (exe || '').replace(/\.exe$/i, '');
+const title = exe => { const t = stem(exe); return t ? t[0].toUpperCase() + t.slice(1) : ''; };
+const appOf = exe => (st.apps || []).find(a => a.exe === (exe || '').toLowerCase());
+// a file input gives the full path only in some hosts; the exe name is enough to find the program
+function pickExe(input, done) {
+  input.onchange = () => {
+    const f = input.files && input.files[0];
+    if (!f) return;
+    const p = filePath(f), exe = exeName(f), full = /[\\/]/.test(p) ? p : '';
+    if (!/\.exe$/.test(exe)) return;
+    toPlugin({ type: 'icon', query: full || exe });
+    done(exe, full);
+    input.value = '';
+  };
+}
+function fillApps(sel, value, emptyText) {
+  sel.innerHTML = '';
+  sel.add(new Option(emptyText, ''));
+  for (const a of st.apps || []) sel.add(new Option(a.name + '  (' + a.exe + ')', a.exe));
+  if (value && !appOf(value)) sel.add(new Option(title(value) + '  (' + value + ', silent)', value));
+  sel.value = value || '';
+}
+function setupNew() {
+  const keySel = $('pttKey'); keySel.innerHTML = '';
+  for (const k of PTT_KEYS) keySel.add(new Option(k, k));
+  $('target').onchange = () => { settings.target = $('target').value; save(); };
+  $('step').onchange = () => { settings.step = +$('step').value; save(); };
+  $('pttMode').onchange = () => { settings.mode = $('pttMode').value; save(); renderNew(); };
+  $('pttKey').onchange = () => { settings.key = $('pttKey').value; save(); };
+  $('pttLabel').oninput = () => { settings.label = $('pttLabel').value; save(); };
+  $('fMode').onchange = () => { settings.mode = $('fMode').value; save(); renderNew(); };
+  $('fLevel').onchange = () => { settings.level = +$('fLevel').value; save(); };
+  $('appSel').onchange = () => {
+    const exe = $('appSel').value, a = appOf(exe);
+    settings.app = exe; settings.appName = exe === '@switcher' ? '' : a ? a.name : title(exe); settings.appPath = '';
+    save(); renderNew();
+  };
+  pickExe($('appFile'), (exe, full) => { settings.app = exe; settings.appName = (appOf(exe) || {}).name || title(exe); settings.appPath = full; save(); renderNew(); });
+  pickExe($('swFile'), exe => { const l = swApps(); if (!l.includes(exe)) l.push(exe); settings.apps = l.join(', '); save(); renderNew(); });
+  pickExe($('rFile'), exe => { $('rExe').dataset.custom = exe; fillApps($('rExe'), exe, '— choose a game —'); if (!$('rName').value) $('rName').value = title(exe); });
+  $('rExe').onchange = () => { if (!$('rName').value) $('rName').value = (appOf($('rExe').value) || {}).name || title($('rExe').value); };
+  $('autoOn').onchange = () => { st.autoEnabled = $('autoOn').checked; toPlugin({ type: 'saveAuto', enabled: st.autoEnabled }); renderPreview2(); };
+  $('rAdd').onclick = () => {
+    const exe = $('rExe').value, profile = $('rProfile').value;
+    if (!exe) return $('rExe').focus();
+    if (!profile) return $('rProfile').focus();
+    const rules = (st.autoRules || []).filter(r => r.exe !== exe);
+    rules.push({ exe, name: $('rName').value.trim() || title(exe), profile });
+    st.autoRules = rules;
+    toPlugin({ type: 'saveAuto', rules });
+    $('rName').value = ''; delete $('rExe').dataset.custom;
+    renderNew();
+  };
+}
+const swApps = () => String(settings.apps || '').split(/[,;\n]/).map(x => x.trim().toLowerCase()).filter(Boolean);
+function renderNew() {
+  if (kind === 'volume') $('target').value = settings.target || 'output';
+  if (['volume', 'appvol'].includes(kind)) $('step').value = String(settings.step || 2);
+  if (kind === 'appvol' || kind === 'focus') {
+    $('appTitle').textContent = kind === 'focus' ? 'Focus mode' : 'App volume';
+    $('appSub').textContent = kind === 'focus' ? 'This program stays as it is. Every other program is turned down or muted.' : 'Volume of one program, like the Windows volume mixer.';
+    fillApps($('appSel'), settings.app, '— choose a program —');
+    if (kind === 'appvol') { $('appSel').add(new Option('Follow App Switcher', '@switcher'), 1); $('appSel').value = settings.app || ''; }
+    const a = appOf(settings.app);
+    $('appNote').textContent = settings.app === '@switcher' ? 'Shows and changes the program chosen on the App Switcher knob.' :
+      !settings.app ? 'Programs that are playing sound are in the list.' :
+      a ? 'Playing sound now.' : 'Silent now (closed or quiet). The key comes alive when it plays sound.';
+  }
+  if (kind === 'focus') {
+    $('fMode').value = settings.mode || 'duck';
+    $('fLevel').value = String(settings.level || 20);
+    $('fLevelBox').hidden = settings.mode === 'mute';
+  }
+  if (kind === 'appvol') swatches($('color2'), () => settings.color, v => { settings.color = v; save(); });
+  if (kind === 'ptt') {
+    $('pttMode').value = settings.mode || 'key';
+    $('pttKey').value = settings.key || 'F13';
+    $('pttLabel').value = settings.label || '';
+    $('pttKeyBox').hidden = settings.mode === 'mute';
+    $('hint').textContent = settings.mode === 'mute'
+      ? 'The microphone is muted until you hold the key, in every program.'
+      : 'In Discord: User Settings > Voice & Video > Input Mode: Push to Talk, then press this key on the Stream Dock to set the shortcut.';
+  }
+  if (kind === 'appswitch') {
+    const box = $('swList'); box.innerHTML = '';
+    const chosen = swApps();
+    const all = [...new Set([...(st.apps || []).map(a => a.exe), ...chosen])];
+    if (!all.length) box.innerHTML = '<p class="empty">No program is playing sound right now.</p>';
+    for (const exe of all) {
+      const row = document.createElement('label'); row.className = 'opt';
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = chosen.includes(exe);
+      cb.onchange = () => { const l = swApps().filter(x => x !== exe); if (cb.checked) l.push(exe); settings.apps = l.join(', '); save(); renderNew(); };
+      const ic = iconEl(exe);
+      const a = appOf(exe);
+      const sm = document.createElement('small'); sm.textContent = a ? a.vol + '%' : 'silent';
+      row.append(cb, ic, document.createTextNode(a ? a.name : title(exe)), sm);
+      box.appendChild(row);
+    }
+  }
+  if (kind === 'autoprofile') {
+    $('autoOn').checked = st.autoEnabled !== false;
+    fillApps($('rExe'), $('rExe').dataset.custom || $('rExe').value, '— choose a game —');
+    fillProfiles($('rProfile'), $('rProfile').value);
+    const box = $('rules'); box.innerHTML = '';
+    if (!(st.autoRules || []).length) box.innerHTML = '<p class="empty">No games yet. Add one below.</p>';
+    for (const r of st.autoRules || []) {
+      const p = st.profiles.find(x => x.id === r.profile);
+      const el = document.createElement('div'); el.className = 'card';
+      const t = document.createElement('b');
+      const dot = document.createElement('span'); dot.className = 'dot';
+      const on = st.autoActive === r.exe;
+      dot.style.background = on ? (p ? p.color : '#a77bff') : 'transparent'; dot.style.border = '1px solid ' + (p ? p.color : '#888');
+      dot.title = on ? 'Running now' : '';
+      t.append(dot, document.createTextNode(r.name || title(r.exe)));
+      const del = document.createElement('button'); del.className = 'icon del'; del.type = 'button'; del.textContent = '✕'; del.title = 'Remove';
+      del.onclick = () => { st.autoRules = st.autoRules.filter(x => x !== r); toPlugin({ type: 'saveAuto', rules: st.autoRules }); renderNew(); };
+      const small = document.createElement('small');
+      small.textContent = r.exe + ' → ' + (p ? p.name : 'profile deleted');
+      el.append(t, document.createElement('span'), del, small);
+      box.appendChild(el);
+    }
+  }
+  renderPreview2();
+}
+function iconEl(exe) {
+  const png = (st.icons || {})[exe];
+  if (png) { const i = document.createElement('img'); i.src = 'data:image/png;base64,' + png; i.alt = ''; return i; }
+  const d = document.createElement('span'); d.className = 'ph'; return d;
+}
+function renderPreview2() {
+  const el = $('preview2'); if (!el) return;
+  const icons = st.icons || {};
+  let svg = '';
+  if (kind === 'volume') svg = R.metric(settings.target === 'mic' ? { icon:'mic', value:80, caption:'Mic', color:'#4ea1ff' } : { icon:'speakerSound', value:62, caption:'Headset', color:'#3ddc5a' });
+  else if (kind === 'appvol') {
+    const a = settings.app === '@switcher' ? (st.apps || [])[0] : appOf(settings.app);
+    if (settings.app === '@switcher') { el.innerHTML = a ? R.app({ name: a.name, icon: icons[a.exe] || '', color: settings.color, value: a.vol, running: true }) : R.key({ icon:'mixer', note:'NO APPS', offline:true }); return; }
+    svg = settings.app ? R.app({ name: settings.appName || title(settings.app), icon: icons[settings.app] || '', color: settings.color, value: a ? a.vol : 72, running: true, muted: a && a.muted })
+                       : R.key({ icon:'mixer', note:'SET UP', color: settings.color });
+  }
+  else if (kind === 'appswitch') { const a = (st.apps || [])[0]; svg = R.app({ name: a ? a.name : 'Spotify', icon: a ? icons[a.exe] || '' : '', value: a ? a.vol : 72, running: true, dots: { i: 0, n: Math.max(2, Math.min(8, (st.apps || []).length)) } }); }
+  else if (kind === 'ptt') svg = settings.mode === 'mute' ? R.key({ icon:'mic', label:'Push to talk', muted:true }) : R.key({ icon:'chat', label: settings.label || 'Push to talk', color:'#a77bff' });
+  else if (kind === 'autoprofile') svg = !(st.autoRules || []).length ? R.key({ icon:'gamepad', note:'SET UP', color:'#4ea1ff' }) : R.key({ icon:'gamepad', label:'Auto', caption: st.autoEnabled === false ? 'off' : 'waiting', color:'#4ea1ff' });
+  else if (kind === 'meter') svg = R.meter({ level: 0.3, peak: 0.6 });
+  else if (kind === 'previous') svg = R.key({ icon:'speaker', label: settings.showName ? 'Desktop' : '', color:'#3ddc5a', badge:'previous' });
+  else if (kind === 'focus') svg = R.key({ icon:'chat', label: (settings.appName || title(settings.app) || 'Discord') + ' only', color:'#a77bff', active:true });
+  el.innerHTML = svg;
 }
 </script>
 </body>

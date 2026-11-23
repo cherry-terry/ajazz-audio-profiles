@@ -1,0 +1,25 @@
+# Builds bin/apmhelper.exe from source/apmhelper.cpp on every push that changes it.
+# Download the result from the run page: Actions > Build audio helper > apmhelper.
+name: Build audio helper
+
+on:
+  push:
+    paths: ['source/apmhelper.cpp', '.github/workflows/build-helper.yml']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MinGW-w64
+        run: sudo apt-get update && sudo apt-get install -y g++-mingw-w64-x86-64
+      - name: Build
+        run: |
+          x86_64-w64-mingw32-g++ -O2 -std=c++17 source/apmhelper.cpp -o apmhelper.exe \
+            -lole32 -luuid -lgdi32 -luser32 -lversion -static -static-libgcc -static-libstdc++ -s
+          ls -l apmhelper.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apmhelper
+          path: apmhelper.exe
