@@ -3,7 +3,7 @@
     {
       "Name": "Sound Output",
       "UUID": "com.diy.audioprofiles.output",
-      "Icon": "static/output.png",
+      "Icon": "static/list-output.png",
       "Tooltip": "Make this device the default output",
       "States": [
         {
@@ -22,7 +22,7 @@
     {
       "Name": "Microphone",
       "UUID": "com.diy.audioprofiles.mic",
-      "Icon": "static/mic.png",
+      "Icon": "static/list-mic.png",
       "Tooltip": "Make this the default microphone; hold to mute",
       "States": [
         {
@@ -41,7 +41,7 @@
     {
       "Name": "Toggle Profiles",
       "UUID": "com.diy.audioprofiles.toggle",
-      "Icon": "static/toggle.png",
+      "Icon": "static/list-toggle.png",
       "Tooltip": "Switch between two audio profiles",
       "States": [
         {
@@ -60,7 +60,7 @@
     {
       "Name": "Profile",
       "UUID": "com.diy.audioprofiles.profile",
-      "Icon": "static/profile.png",
+      "Icon": "static/list-profile.png",
       "Tooltip": "Activate an audio profile",
       "States": [
         {
@@ -79,11 +79,166 @@
     {
       "Name": "Mic Mute",
       "UUID": "com.diy.audioprofiles.mute",
-      "Icon": "static/mute.png",
+      "Icon": "static/list-mute.png",
       "Tooltip": "Mute or unmute the default microphone",
       "States": [
         {
           "Image": "static/mute.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Volume",
+      "UUID": "com.diy.audioprofiles.volume",
+      "Icon": "static/list-volume.png",
+      "Tooltip": "Output or mic volume. Knob: turn to change, press to mute. Key: shows the level, tap to mute",
+      "States": [
+        {
+          "Image": "static/volume.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Knob"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "App Volume",
+      "UUID": "com.diy.audioprofiles.appvol",
+      "Icon": "static/list-appvol.png",
+      "Tooltip": "Volume of one program. Knob: turn to change, press to mute. Key: tap to mute",
+      "States": [
+        {
+          "Image": "static/appvol.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Knob"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Push to Talk",
+      "UUID": "com.diy.audioprofiles.ptt",
+      "Icon": "static/list-ptt.png",
+      "Tooltip": "Hold to talk: presses a key for Discord (F13 by default) or unmutes the mic while held",
+      "States": [
+        {
+          "Image": "static/ptt.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "App Switcher",
+      "UUID": "com.diy.audioprofiles.appswitch",
+      "Icon": "static/list-appswitch.png",
+      "Tooltip": "Pick a program and change its volume. Press: next program, turn: volume, hold: mute",
+      "States": [
+        {
+          "Image": "static/appswitch.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad",
+        "Knob"
+      ],
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Auto Profile",
+      "UUID": "com.diy.audioprofiles.autoprofile",
+      "Icon": "static/list-autoprofile.png",
+      "Tooltip": "Switch to a profile when a game starts and back when it closes. Tap to turn on or off",
+      "States": [
+        {
+          "Image": "static/autoprofile.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Mic Level",
+      "UUID": "com.diy.audioprofiles.meter",
+      "Icon": "static/list-meter.png",
+      "Tooltip": "Live microphone level. Tap to mute",
+      "States": [
+        {
+          "Image": "static/meter.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Previous Profile",
+      "UUID": "com.diy.audioprofiles.previous",
+      "Icon": "static/list-previous.png",
+      "Tooltip": "Go back to the previous output and microphone",
+      "States": [
+        {
+          "Image": "static/previous.png",
+          "ShowTitle": false
+        }
+      ],
+      "Controllers": [
+        "Keypad"
+      ],
+      "SupportedInMultiActions": true,
+      "UserTitleEnabled": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "propertyInspector/index.html"
+    },
+    {
+      "Name": "Focus Mode",
+      "UUID": "com.diy.audioprofiles.focus",
+      "Icon": "static/list-focus.png",
+      "Tooltip": "Only one program stays loud (Discord by default); the rest are turned down until you tap again",
+      "States": [
+        {
+          "Image": "static/focus.png",
           "ShowTitle": false
         }
       ],
@@ -103,8 +258,8 @@
   "CategoryIcon": "static/plugin.png",
   "Category": "Audio Profiles",
   "CodePathWin": "plugin/index.js",
-  "Description": "Switch Windows audio devices and profiles, with live LED indicators",
-  "Version": "1.0.0",
+  "Description": "Switch Windows audio devices and profiles, control volume from the knobs, mix programs, push-to-talk and focus mode",
+  "Version": "1.1.0",
   "URL": "https://github.com",
   "OS": [
     {
